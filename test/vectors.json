@@ -1,0 +1,173 @@
+{
+  "version": "1.3.0",
+  "limits": {
+    "MaxNameLength": 200,
+    "MaxDescriptionLength": 2000,
+    "MaxUrlLength": 2048,
+    "MaxEmailLength": 254,
+    "MaxPhoneLength": 20,
+    "MaxColorLength": 9,
+    "MaxPageSize": 100,
+    "DefaultPageSize": 20,
+    "MinPageSize": 1,
+    "MaxPasswordLength": 128,
+    "MinPasswordLength": 8,
+    "MinUsernameLength": 3,
+    "MaxUsernameLength": 50,
+    "MaxPersonNameLength": 50,
+    "MaxTenantNameLength": 100
+  },
+  "genericCodes": {
+    "REQUIRED": ["NotEmptyValidator", "NotNullValidator"],
+    "TOO_SHORT": ["MinimumLengthValidator"],
+    "TOO_LONG": ["MaximumLengthValidator"],
+    "INVALID_FORMAT": ["RegularExpressionValidator", "EmailValidator", "PredicateValidator", "AsyncPredicateValidator", "LengthValidator"]
+  },
+  "kinds": {
+    "username": {
+      "type": "string",
+      "rules": [
+        { "code": "USERNAME_TOO_SHORT", "minLength": "MinUsernameLength", "message": "{PropertyName} must be at least {limit} characters." },
+        { "code": "USERNAME_TOO_LONG", "maxLength": "MaxUsernameLength", "message": "{PropertyName} must be at most {limit} characters." },
+        { "code": "USERNAME_CHARSET", "pattern": "^[A-Za-z0-9_.\\-]+$", "message": "{PropertyName} may only contain letters, digits, underscore, dot, or dash." }
+      ],
+      "vectors": {
+        "valid": ["abc", "alice.smith", "a_b-c.d9", { "repeat": "a", "times": 50 }],
+        "invalid": [
+          { "value": "ab", "codes": ["USERNAME_TOO_SHORT"] },
+          { "value": "bad name!", "codes": ["USERNAME_CHARSET"] },
+          { "value": { "repeat": "a", "times": 51 }, "codes": ["USERNAME_TOO_LONG"] },
+          { "value": "a!", "codes": ["USERNAME_TOO_SHORT", "USERNAME_CHARSET"] },
+          { "value": "näme", "codes": ["USERNAME_CHARSET"] }
+        ]
+      }
+    },
+    "password": {
+      "type": "string",
+      "rules": [
+        { "code": "PASSWORD_TOO_SHORT", "minLength": "MinPasswordLength", "message": "{PropertyName} must be at least {limit} characters." },
+        { "code": "PASSWORD_TOO_LONG", "maxLength": "MaxPasswordLength", "message": "{PropertyName} must be at most {limit} characters." },
+        { "code": "PASSWORD_NEEDS_UPPER", "pattern": "[A-Z]", "message": "{PropertyName} must contain at least one uppercase letter." },
+        { "code": "PASSWORD_NEEDS_LOWER", "pattern": "[a-z]", "message": "{PropertyName} must contain at least one lowercase letter." },
+        { "code": "PASSWORD_NEEDS_DIGIT", "pattern": "[0-9]", "message": "{PropertyName} must contain at least one digit." }
+      ],
+      "vectors": {
+        "valid": ["Abcdefg1", "Str0ngPassw0rd!", { "prefix": "Aa1", "repeat": "b", "times": 125 }],
+        "invalid": [
+          { "value": "abcdefg1!", "codes": ["PASSWORD_NEEDS_UPPER"] },
+          { "value": "ABCDEFG1", "codes": ["PASSWORD_NEEDS_LOWER"] },
+          { "value": "Abcdefgh", "codes": ["PASSWORD_NEEDS_DIGIT"] },
+          { "value": "Abc1", "codes": ["PASSWORD_TOO_SHORT"] },
+          { "value": { "prefix": "Aa1", "repeat": "b", "times": 126 }, "codes": ["PASSWORD_TOO_LONG"] },
+          { "value": "Abcdefg١", "codes": ["PASSWORD_NEEDS_DIGIT"] }
+        ]
+      }
+    },
+    "email": {
+      "type": "string",
+      "rules": [
+        { "code": "EMAIL_TOO_LONG", "maxLength": "MaxEmailLength", "message": "{PropertyName} must be at most {limit} characters." },
+        { "code": "EMAIL_FORMAT", "pattern": "^[^@{ws}]+@[^@{ws}]+\\.[^@{ws}]+$", "message": "{PropertyName} must be a valid email address." }
+      ],
+      "vectors": {
+        "valid": ["a@b.co", "first.last+tag@example.com", "x@sub.domain.org"],
+        "invalid": [
+          { "value": "plain", "codes": ["EMAIL_FORMAT"] },
+          { "value": "a@b", "codes": ["EMAIL_FORMAT"] },
+          { "value": "a b@c.de", "codes": ["EMAIL_FORMAT"] },
+          { "value": "a@@b.co", "codes": ["EMAIL_FORMAT"] },
+          { "value": "a﻿@b.co", "codes": ["EMAIL_FORMAT"] },
+          { "value": { "prefix": "a@b.", "repeat": "c", "times": 251 }, "codes": ["EMAIL_TOO_LONG"] }
+        ]
+      }
+    },
+    "personName": {
+      "type": "string",
+      "rules": [
+        { "code": "PERSON_NAME_TOO_LONG", "maxLength": "MaxPersonNameLength", "message": "{PropertyName} must be at most {limit} characters." }
+      ],
+      "vectors": {
+        "valid": ["Ada", "José María", { "repeat": "n", "times": 50 }],
+        "invalid": [
+          { "value": { "repeat": "n", "times": 51 }, "codes": ["PERSON_NAME_TOO_LONG"] },
+          { "value": { "repeat": "n", "times": 200 }, "codes": ["PERSON_NAME_TOO_LONG"] },
+          { "value": { "prefix": "Ada ", "repeat": "x", "times": 47 }, "codes": ["PERSON_NAME_TOO_LONG"] }
+        ]
+      }
+    },
+    "tenantName": {
+      "type": "string",
+      "rules": [
+        { "code": "TENANT_NAME_TOO_LONG", "maxLength": "MaxTenantNameLength", "message": "{PropertyName} must be at most {limit} characters." }
+      ],
+      "vectors": {
+        "valid": ["Acme", "Café Nikos Ltd", { "repeat": "t", "times": 100 }],
+        "invalid": [
+          { "value": { "repeat": "t", "times": 101 }, "codes": ["TENANT_NAME_TOO_LONG"] },
+          { "value": { "repeat": "t", "times": 200 }, "codes": ["TENANT_NAME_TOO_LONG"] },
+          { "value": { "prefix": "Acme ", "repeat": "x", "times": 96 }, "codes": ["TENANT_NAME_TOO_LONG"] }
+        ]
+      }
+    },
+    "url": {
+      "type": "string",
+      "rules": [
+        { "code": "URL_TOO_LONG", "maxLength": "MaxUrlLength", "message": "{PropertyName} must be at most {limit} characters." },
+        { "code": "URL_FORMAT", "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://[^{ws}]+$", "message": "{PropertyName} must be a valid HTTP or HTTPS URL." }
+      ],
+      "vectors": {
+        "valid": ["https://example.com", "http://a.b/c?d=1", "HTTPS://EXAMPLE.COM/x"],
+        "invalid": [
+          { "value": "example.com", "codes": ["URL_FORMAT"] },
+          { "value": "ftp://example.com", "codes": ["URL_FORMAT"] },
+          { "value": "https://exa mple.com", "codes": ["URL_FORMAT"] },
+          { "value": "https://", "codes": ["URL_FORMAT"] },
+          { "value": { "prefix": "https://a.b/", "repeat": "c", "times": 2037 }, "codes": ["URL_TOO_LONG"] }
+        ]
+      }
+    },
+    "phone": {
+      "type": "string",
+      "rules": [
+        { "code": "PHONE_TOO_LONG", "maxLength": "MaxPhoneLength", "message": "{PropertyName} must be at most {limit} characters." }
+      ],
+      "vectors": {
+        "valid": ["+357 99 123456", "0044 20 7946 0958", { "repeat": "1", "times": 20 }],
+        "invalid": [
+          { "value": { "repeat": "1", "times": 21 }, "codes": ["PHONE_TOO_LONG"] },
+          { "value": "+357 99 123456 ext. 12345", "codes": ["PHONE_TOO_LONG"] },
+          { "value": { "prefix": "+", "repeat": "9", "times": 20 }, "codes": ["PHONE_TOO_LONG"] }
+        ]
+      }
+    },
+    "hexColor": {
+      "type": "string",
+      "rules": [
+        { "code": "HEX_COLOR_FORMAT", "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", "message": "{PropertyName} must be a valid hex color (#RGB, #RRGGBB, or #RRGGBBAA)." }
+      ],
+      "vectors": {
+        "valid": ["#fff", "#A1B2C3", "#00000080"],
+        "invalid": [
+          { "value": "fff", "codes": ["HEX_COLOR_FORMAT"] },
+          { "value": "#ffff", "codes": ["HEX_COLOR_FORMAT"] },
+          { "value": "#ggg", "codes": ["HEX_COLOR_FORMAT"] },
+          { "value": "#ffffff0", "codes": ["HEX_COLOR_FORMAT"] }
+        ]
+      }
+    },
+    "pageSize": {
+      "type": "integer",
+      "rules": [
+        { "code": "PAGE_SIZE_OUT_OF_RANGE", "min": "MinPageSize", "max": "MaxPageSize", "message": "{PropertyName} must be between {min} and {max}." }
+      ],
+      "vectors": {
+        "valid": [1, 20, 100],
+        "invalid": [
+          { "value": 0, "codes": ["PAGE_SIZE_OUT_OF_RANGE"] },
+          { "value": 101, "codes": ["PAGE_SIZE_OUT_OF_RANGE"] },
+          { "value": -5, "codes": ["PAGE_SIZE_OUT_OF_RANGE"] }
+        ]
+      }
+    }
+  }
+}
