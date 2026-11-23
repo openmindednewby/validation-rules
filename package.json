@@ -1,0 +1,70 @@
+{
+  "name": "@dloizides/validation-rules",
+  "version": "0.1.0",
+  "description": "Field validation rules (limits, codes, validators) generated from DLoizides.Validation rules/validation-rules.json, so client and server check a field the same way.",
+  "keywords": [
+    "validation",
+    "form",
+    "rules",
+    "username",
+    "password",
+    "email"
+  ],
+  "author": "dloizides",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openmindednewby/validation-rules.git"
+  },
+  "homepage": "https://github.com/openmindednewby/validation-rules#readme",
+  "bugs": {
+    "url": "https://github.com/openmindednewby/validation-rules/issues"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsup",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "security:audit": "npm audit --audit-level=high",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.19.32",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}
